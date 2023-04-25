@@ -1,5 +1,5 @@
 provider "aws" {
-  region = var.region
+  region = var.aws_region
 }
 
 resource "aws_iam_role" "ecs_task_execution_role" {
