@@ -61,35 +61,46 @@ resource "aws_ecs_task_definition" "definition" {
   memory                   = "1024"
   requires_compatibilities = ["FARGATE"]
   container_definitions = <<DEFINITION
-[
-  {
-    "image": "${var.account}.dkr.ecr.eu-west-1.amazonaws.com/project:latest",
-    "name": "project-container",
-    "logConfiguration": {
-                "logDriver": "awslogs",
-                "options": {
-                    "awslogs-region" : "eu-west-1",
-                    "awslogs-group" : "stream-to-log-fluentd",
-                    "awslogs-stream-prefix" : "project"
-                }
-            },
-    "secrets": [{
-        "name": "secret_variable_name",
-        "valueFrom": "arn:aws:ssm:region:acount:parameter/parameter_name"
-    }],           
-    "environment": [
-            {
-                "name": "bucketName",
-                "value": "${var.bucket_name}"
-            },
-            {
-                "name": "folder",
-                "value": "${var.folder}"
+[ 
+      { 
+         "command": [
+            "/bin/sh -c \"echo '<html> <head> <title>Amazon ECS Sample App</title> <style>body {margin-top: 40px; background-color: #333;} </style> </head><body> <div style=color:white;text-align:center> <h1>Amazon ECS Sample App</h1> <h2>Congratulations!</h2> <p>Your application is now running on a container in Amazon ECS.</p> </div></body></html>' >  /usr/local/apache2/htdocs/index.html && httpd-foreground\""
+         ],
+         "entryPoint": [
+            "sh",
+            "-c"
+         ],
+         "essential": true,
+         "image": "httpd:2.4",
+         "logConfiguration": { 
+            "logDriver": "awslogs",
+            "options": { 
+               "awslogs-group" : "/ecs/fargate-task-definition",
+               "awslogs-region": "us-east-1",
+               "awslogs-stream-prefix": "ecs"
             }
-        ]
-    }
-  
-]
+         },
+         "name": "sample-fargate-app",
+         "portMappings": [ 
+            { 
+               "containerPort": 80,
+               "hostPort": 80,
+               "protocol": "tcp"
+            }
+         ]
+      }
+   ],
+   "cpu": "256",
+   "executionRoleArn": "arn:aws:iam::012345678910:role/ecsTaskExecutionRole",
+   "family": "fargate-task-definition",
+   "runtimePlatform": {
+        "operatingSystemFamily": "LINUX"
+    },
+   "memory": "512",
+   "networkMode": "awsvpc",
+   "requiresCompatibilities": [ 
+       "FARGATE" 
+    ]
 DEFINITION
 }
 
