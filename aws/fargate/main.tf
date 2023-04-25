@@ -76,17 +76,8 @@ resource "aws_ecs_task_definition" "definition" {
     "secrets": [{
         "name": "secret_variable_name",
         "valueFrom": "arn:aws:ssm:region:acount:parameter/parameter_name"
-    }],           
-    "environment": [
-            {
-                "name": "bucketName",
-                "value": "${var.bucket_name}"
-            },
-            {
-                "name": "folder",
-                "value": "${var.folder}"
-            }
-        ]
+    }]           
+
     }
   
 ]
