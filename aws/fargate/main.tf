@@ -93,7 +93,7 @@ resource "aws_ecs_task_definition" "definition" {
   DEFINITION
 }
 
-  }
+
 
 
 resource "aws_ecs_cluster" "cluster" {
