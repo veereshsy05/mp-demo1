@@ -69,3 +69,36 @@ resource "aws_vpc" "aws-vpc" {
   cidr_block = "10.0.0.0/16" 
   enable_dns_hostnames = true
 }
+
+container_definitions = <<DEFINITION
+[
+  {
+    "image": "${var.account}.dkr.ecr.eu-west-1.amazonaws.com/project:latest",
+    "name": "project-container",
+    "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                    "awslogs-region" : "eu-west-1",
+                    "awslogs-group" : "stream-to-log-fluentd",
+                    "awslogs-stream-prefix" : "project"
+                }
+            },
+    "secrets": [{
+        "name": "secret_variable_name",
+        "valueFrom": "arn:aws:ssm:region:acount:parameter/parameter_name"
+    }],           
+    "environment": [
+            {
+                "name": "bucketName",
+                "value": "${var.bucket_name}"
+            },
+            {
+                "name": "folder",
+                "value": "${var.folder}"
+            }
+        ]
+    }
+  
+]
+DEFINITION
+}
